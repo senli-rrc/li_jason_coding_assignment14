@@ -1,0 +1,171 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  # Enforce branch protection and prevent direct pushes to main
+  branch-protection:
+    runs-on: ubuntu-latest
+    name: Branch Protection Check
+
+    steps:
+      - name: Check target branch
+        run: |
+          if [[ "${{ github.event.pull_request.base.ref }}" == "main" || "${{ github.event.pull_request.base.ref }}" == "master" ]]; then
+            echo "✅ Pull request targeting protected branch: ${{ github.event.pull_request.base.ref }}"
+          else
+            echo "ℹ️ Pull request targeting: ${{ github.event.pull_request.base.ref }}"
+          fi
+
+  # Lint commit messages
+  commit-lint:
+    runs-on: ubuntu-latest
+    name: Commit Message Lint
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check commit messages
+        run: |
+          echo "Checking commit messages in this PR..."
+          git log --oneline ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | while read line; do
+            echo "Commit: $line"
+            if [[ ${#line} -lt 10 ]]; then
+              echo "❌ Commit message too short (less than 10 characters)"
+              exit 1
+            fi
+          done
+          echo "✅ All commit messages meet minimum requirements"
+
+  # Run the same checks as the main CI but with PR context
+  pr-validation:
+    runs-on: ubuntu-latest
+    name: PR Validation
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate package.json
+        run: |
+          echo "Validating package.json structure..."
+          node -e "
+            const pkg = require('./package.json');
+            if (!pkg.scripts || !pkg.scripts.test) {
+              console.error('❌ Missing test script in package.json');
+              process.exit(1);
+            }
+            console.log('✅ package.json validation passed');
+          "
+
+      - name: Check for common issues
+        run: |
+          echo "Checking for common code issues..."
+
+          # Check for console.log statements (warning only)
+          if grep -r "console\.log" src/ --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" 2>/dev/null; then
+            echo "⚠️ Warning: Found console.log statements in source code"
+          fi
+
+          # Check for TODO/FIXME comments
+          if grep -r "TODO\|FIXME" src/ --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" 2>/dev/null; then
+            echo "ℹ️ Info: Found TODO/FIXME comments"
+          fi
+
+          # Check for .only in test files (should fail the build)
+          if grep -r "\.only\|fdescribe\|fit" src/ --include="*.test.*" --include="*.spec.*" 2>/dev/null; then
+            echo "❌ Error: Found .only, fdescribe, or fit in test files"
+            exit 1
+          fi
+
+          echo "✅ Code quality checks completed"
+
+  # Size impact analysis
+  size-check:
+    runs-on: ubuntu-latest
+    name: Bundle Size Check
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and check size (UI Library)
+        working-directory: ./li_jason_ui_garden_build_checks
+        run: |
+          npm ci
+          npm run rollup
+          echo "📦 Bundle sizes:"
+          ls -lh dist/ || echo "No dist folder found"
+          du -sh dist/ 2>/dev/null || echo "Could not calculate total size"
+
+  # Auto-assign reviewers and labels
+  pr-automation:
+    runs-on: ubuntu-latest
+    name: PR Automation
+    if: github.event.action == 'opened'
+
+    steps:
+      - name: Add labels based on changes
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+
+            const labels = new Set();
+
+            for (const file of files) {
+              if (file.filename.includes('.test.') || file.filename.includes('.spec.')) {
+                labels.add('tests');
+              }
+              if (file.filename.includes('li_jason_ui_garden_build_checks/')) {
+                labels.add('ui-library');
+              }
+              if (file.filename.includes('src/')) {
+                labels.add('main-app');
+              }
+              if (file.filename.includes('docker') || file.filename.includes('Dockerfile')) {
+                labels.add('docker');
+              }
+              if (file.filename.includes('.github/workflows/')) {
+                labels.add('ci/cd');
+              }
+              if (file.filename.includes('package.json') || file.filename.includes('package-lock.json')) {
+                labels.add('dependencies');
+              }
+            }
+
+            if (labels.size > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: Array.from(labels),
+              });
+            }

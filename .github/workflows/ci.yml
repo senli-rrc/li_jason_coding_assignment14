@@ -1,0 +1,153 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [main, master, develop, testing]
+  pull_request:
+    branches: [main, master, develop, testing]
+
+jobs:
+  # Job for the main React application
+  main-app:
+    runs-on: ubuntu-latest
+    name: Main App - Lint, Test & Build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check code formatting with Prettier
+        run: npx prettier --check "**/*.{js,jsx,ts,tsx,json,css,scss,md}"
+
+      - name: Run ESLint
+        run: npx eslint "**/*.{js,jsx,ts,tsx}" --max-warnings 0
+
+      - name: Run tests
+        run: npm test -- --coverage --watchAll=false
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+          flags: main-app
+          name: main-app-coverage
+        continue-on-error: true
+
+  # Job for the UI Component Library
+  ui-library:
+    runs-on: ubuntu-latest
+    name: UI Library - Lint, Test & Build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies for UI library
+        working-directory: ./li_jason_ui_garden_build_checks
+        run: npm ci
+
+      - name: Run tests for UI library
+        working-directory: ./li_jason_ui_garden_build_checks
+        run: npm test -- --coverage --watchAll=false
+
+      - name: Build UI library with Rollup
+        working-directory: ./li_jason_ui_garden_build_checks
+        run: npm run rollup
+
+      - name: Build Storybook
+        working-directory: ./li_jason_ui_garden_build_checks
+        run: npm run build-storybook
+
+      - name: Upload UI library coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./li_jason_ui_garden_build_checks/coverage/lcov.info
+          flags: ui-library
+          name: ui-library-coverage
+        continue-on-error: true
+
+  # Job for Docker build verification
+  docker-build:
+    runs-on: ubuntu-latest
+    name: Docker Build Verification
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: li-jason-app:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Security and dependency check
+  security-check:
+    runs-on: ubuntu-latest
+    name: Security & Dependency Check
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+
+      - name: Install dependencies for UI library
+        working-directory: ./li_jason_ui_garden_build_checks
+        run: npm ci
+
+      - name: Run npm audit for UI library
+        working-directory: ./li_jason_ui_garden_build_checks
+        run: npm audit --audit-level=moderate
+
+  # Notification job (runs only on failure)
+  notify-failure:
+    runs-on: ubuntu-latest
+    name: Notify Build Failure
+    needs: [main-app, ui-library, docker-build, security-check]
+    if: failure()
+
+    steps:
+      - name: Notify build failure
+        run: |
+          echo "🚨 BUILD FAILED! 🚨"
+          echo "One or more checks have failed. Please review the failed jobs above."
+          echo "The following jobs were configured to run:"
+          echo "  ✓ Main App - Lint, Test & Build"
+          echo "  ✓ UI Library - Lint, Test & Build" 
+          echo "  ✓ Docker Build Verification"
+          echo "  ✓ Security & Dependency Check"
+          echo ""
+          echo "Please fix the issues and push again."
+          exit 1

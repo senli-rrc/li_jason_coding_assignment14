@@ -1,0 +1,109 @@
+name: Dependency & Security Monitoring
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  dependency-check:
+    runs-on: ubuntu-latest
+    name: Weekly Dependency Audit
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for outdated packages
+        run: |
+          echo "📦 Checking for outdated packages in main app..."
+          npm outdated || true
+
+      - name: Check for security vulnerabilities
+        run: |
+          echo "🔐 Running security audit for main app..."
+          npm audit --json > audit-main.json || true
+          cat audit-main.json
+
+      - name: Install UI library dependencies
+        working-directory: ./li_jason_ui_garden_build_checks
+        run: npm ci
+
+      - name: Check outdated packages in UI library
+        working-directory: ./li_jason_ui_garden_build_checks
+        run: |
+          echo "📦 Checking for outdated packages in UI library..."
+          npm outdated || true
+
+      - name: Check security vulnerabilities in UI library
+        working-directory: ./li_jason_ui_garden_build_checks
+        run: |
+          echo "🔐 Running security audit for UI library..."
+          npm audit --json > audit-ui.json || true
+          cat audit-ui.json
+
+      - name: Create issue for vulnerabilities
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            let issueBody = '## 🚨 Security Vulnerabilities Detected\n\n';
+            issueBody += 'The weekly dependency audit has found security vulnerabilities in the project.\n\n';
+            issueBody += '### Action Required\n';
+            issueBody += '1. Review the audit results in the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\n';
+            issueBody += '2. Update vulnerable packages using `npm audit fix`\n';
+            issueBody += '3. Test thoroughly after updates\n';
+            issueBody += '4. Create a PR with the fixes\n\n';
+            issueBody += '### Automation\n';
+            issueBody += 'This issue was automatically created by the dependency monitoring workflow.\n';
+            issueBody += `Run date: ${new Date().toISOString()}\n`;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 Security Vulnerabilities Found - Action Required',
+              body: issueBody,
+              labels: ['security', 'dependencies', 'high-priority']
+            });
+
+  license-check:
+    runs-on: ubuntu-latest
+    name: License Compliance Check
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install license checker
+        run: npm install -g license-checker
+
+      - name: Check licenses in main app
+        run: |
+          echo "📄 Checking licenses in main app..."
+          npm ci
+          license-checker --summary || true
+
+      - name: Check licenses in UI library
+        working-directory: ./li_jason_ui_garden_build_checks
+        run: |
+          echo "📄 Checking licenses in UI library..."
+          npm ci
+          license-checker --summary || true

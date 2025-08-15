@@ -46,7 +46,7 @@ If any of these checks fail, the build will be marked as failed and contributors
    npm start
    ```
 
-   This will start Storybook on `http://localhost:5575`
+   This will start your Portfolio app on `http://localhost:5575`
 
 4. **Run tests**
    ```bash

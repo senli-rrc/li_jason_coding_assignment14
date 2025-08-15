@@ -58,7 +58,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Validate package.json
         run: |
@@ -110,12 +110,12 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build and check size (UI Library)
         working-directory: ./li_jason_final_site
         run: |
-          npm ci
+          npm install --legacy-peer-deps
           npm run rollup
           echo "📦 Bundle sizes:"
           ls -lh dist/ || echo "No dist folder found"

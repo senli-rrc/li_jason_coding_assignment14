@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "5575:5575"
+      - "3000:3000"
     volumes:
       - ./li_jason_final_site/src:/li_jason_final_site/src
     restart: unless-stopped

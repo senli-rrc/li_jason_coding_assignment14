@@ -22,7 +22,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Check for outdated packages
         run: |
@@ -37,7 +37,7 @@ jobs:
 
       - name: Install dependencies for UI library
         working-directory: ./li_jason_final_site
-        run: npm ci
+        run: npm install --legacy-peer-deps
 
       - name: Run npm audit for UI library
         working-directory: ./li_jason_final_site
@@ -103,12 +103,12 @@ jobs:
       - name: Check licenses in main app
         run: |
           echo "📄 Checking licenses in main app..."
-          npm ci
+          npm install
           license-checker --summary || true
 
       - name: Check licenses in UI library
         working-directory: ./li_jason_final_site
         run: |
           echo "📄 Checking licenses in UI library..."
-          npm ci
+          npm install --legacy-peer-deps
           license-checker --summary || true

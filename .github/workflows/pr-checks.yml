@@ -113,7 +113,7 @@ jobs:
         run: npm ci
 
       - name: Build and check size (UI Library)
-        working-directory: ./li_jason_ui_garden_build_checks
+        working-directory: ./li_jason_final_site
         run: |
           npm ci
           npm run rollup
@@ -144,7 +144,7 @@ jobs:
               if (file.filename.includes('.test.') || file.filename.includes('.spec.')) {
                 labels.add('tests');
               }
-              if (file.filename.includes('li_jason_ui_garden_build_checks/')) {
+              if (file.filename.includes('li_jason_final_site/')) {
                 labels.add('ui-library');
               }
               if (file.filename.includes('src/')) {

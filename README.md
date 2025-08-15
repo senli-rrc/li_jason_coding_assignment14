@@ -1,4 +1,4 @@
-# React + Storybook UI Component Library
+# Build a Portfolio Website with React
 
 [![CI Status](https://github.com/senli-rrc/li_jason_coding_assignment13/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/senli-rrc/li_jason_coding_assignment13/actions/workflows/ci.yml)
 [![PR Checks](https://github.com/senli-rrc/li_jason_coding_assignment13/actions/workflows/pr-checks.yml/badge.svg?branch=main)](https://github.com/senli-rrc/li_jason_coding_assignment13/actions/workflows/pr-checks.yml)
@@ -29,24 +29,24 @@ If any of these checks fail, the build will be marked as failed and contributors
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/senli-rrc/li_jason_coding_assignment13.git
-   cd li_jason_coding_assignment13
+   git clone https://github.com/senli-rrc/li_jason_coding_assignment14.git
+   cd li_jason_coding_assignment14
    ```
 
 2. **Install dependencies**
 
    ```bash
-   cd li_jason_ui_garden_build_checks
+   cd li_jason_final_site
    npm install --legacy-peer-deps
    ```
 
-3. **Run Storybook locally**
+3. **Run Portfolio locally**
 
    ```bash
-   npm run storybook
+   npm start
    ```
 
-   This will start Storybook on `http://localhost:8013`
+   This will start Storybook on `http://localhost:5575`
 
 4. **Run tests**
    ```bash
@@ -154,9 +154,9 @@ For local development with Docker Compose (includes hot reload):
 
    This will:
    - Build the development Docker image
-   - Start Storybook with hot reload
+   - Start Portfolio with hot reload
    - Mount your local source code for live editing
-   - Make Storybook available at `http://localhost:8013`
+   - Make Portfolio available at `http://localhost:8013`
 
 2. **Stop the development environment**
 
@@ -171,10 +171,10 @@ For local development with Docker Compose (includes hot reload):
 4. **Build a production**
 
    ```bash
-   docker build -t li_jason_coding_assignment13 .
+   docker build -t li_jason_coding_assignment14 .
    ```
 
 5. **Run the Image**
    ```bash
-   docker run -p 8013:8013 li_jason_coding_assignment13
+   docker run -p 8013:8013 li_jason_coding_assignment14
    ```

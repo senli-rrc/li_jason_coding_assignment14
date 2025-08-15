@@ -1,6 +1,6 @@
 module.exports = {
   testEnvironment: "jsdom",
-  setupFilesAfterEnv: ["<rootDir>/li_jason_ui_garden_build_checks/src/setupTests.ts"],
+  setupFilesAfterEnv: ["<rootDir>/li_jason_final_site/src/setupTests.ts"],
   moduleNameMapper: {
     ".(css|less|scss)$": "identity-obj-proxy",
   },

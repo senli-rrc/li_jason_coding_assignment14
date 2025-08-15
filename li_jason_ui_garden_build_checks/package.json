@@ -8,6 +8,9 @@
   "module": "dist/esm/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "start": "vite --config vite.app.config.ts --port 5575 --host 0.0.0.0",
+    "build": "vite build --config vite.app.config.ts",
+    "preview": "vite preview --config vite.app.config.ts",
     "rollup": "rollup -c --bundleConfigAsCjs",
     "test": "jest",
     "storybook": "storybook dev -p 8018 --host 0.0.0.0 --no-open",
@@ -47,6 +50,7 @@
     "vite": "^6.3.5"
   },
   "dependencies": {
+    "react-dom": "^19.1.0",
     "styled-components": "^6.1.19"
   }
 }

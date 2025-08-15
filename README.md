@@ -1,8 +1,8 @@
 # Build a Portfolio Website with React
 
-[![CI Status](https://github.com/senli-rrc/li_jason_coding_assignment13/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/senli-rrc/li_jason_coding_assignment13/actions/workflows/ci.yml)
-[![PR Checks](https://github.com/senli-rrc/li_jason_coding_assignment13/actions/workflows/pr-checks.yml/badge.svg?branch=main)](https://github.com/senli-rrc/li_jason_coding_assignment13/actions/workflows/pr-checks.yml)
-[![Security Audit](https://github.com/senli-rrc/li_jason_coding_assignment13/actions/workflows/security-monitoring.yml/badge.svg?branch=main)](https://github.com/senli-rrc/li_jason_coding_assignment13/actions/workflows/security-monitoring.yml)
+[![CI Status](https://github.com/senli-rrc/li_jason_coding_assignment14/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/senli-rrc/li_jason_coding_assignment14/actions/workflows/ci.yml)
+[![PR Checks](https://github.com/senli-rrc/li_jason_coding_assignment14/actions/workflows/pr-checks.yml/badge.svg?branch=main)](https://github.com/senli-rrc/li_jason_coding_assignment14/actions/workflows/pr-checks.yml)
+[![Security Audit](https://github.com/senli-rrc/li_jason_coding_assignment14/actions/workflows/security-monitoring.yml/badge.svg?branch=main)](https://github.com/senli-rrc/li_jason_coding_assignment14/actions/workflows/security-monitoring.yml)
 
 This project is a comprehensive UI component library built with React, TypeScript, styled-components, and Storybook. It provides a collection of reusable, responsive, and accessible components that can be used across different projects.
 
@@ -56,7 +56,7 @@ If any of these checks fail, the build will be marked as failed and contributors
 ### Implement Pre-commit checks
 
 This section outlines how to implement pre-commit checks using Husky, lint-staged, Prettier, and ESLint to ensure code quality before commits.
-Make sure you are in the li_jason_coding_assignment13 directory.
+Make sure you are in the li_jason_final_site directory.
 
 #### Step 1: Install the Necessary Dependencies
 
@@ -156,7 +156,7 @@ For local development with Docker Compose (includes hot reload):
    - Build the development Docker image
    - Start Portfolio with hot reload
    - Mount your local source code for live editing
-   - Make Portfolio available at `http://localhost:8013`
+   - Make Portfolio available at `http://localhost:5575`
 
 2. **Stop the development environment**
 
@@ -176,5 +176,5 @@ For local development with Docker Compose (includes hot reload):
 
 5. **Run the Image**
    ```bash
-   docker run -p 8013:8013 li_jason_coding_assignment14
+   docker run -p 5575:5575 li_jason_coding_assignment14
    ```

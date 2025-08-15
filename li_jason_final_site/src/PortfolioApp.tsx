@@ -297,7 +297,7 @@ const PortfolioApp: React.FC = () => {
         "Personal portfolio website showcasing projects, skills, and resources. Built with React and styled-components, featuring responsive designs.",
       image:
         "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=400&h=250&fit=crop",
-      link: "https://jasonli-portfolio.example.com",
+      link: "https://github.com/senli-rrc/li_jason_coding_assignment14",
       techList: ["React", "TypeScript", "Styled Components", "Vite"],
     },
   ];

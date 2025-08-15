@@ -4,5 +4,5 @@ COPY li_jason_final_site/package*.json ./
 RUN npm install --legacy-peer-deps
 # RUN npm run build
 COPY li_jason_final_site/ .
-EXPOSE 3000
+EXPOSE 5575
 CMD ["npm", "start"]

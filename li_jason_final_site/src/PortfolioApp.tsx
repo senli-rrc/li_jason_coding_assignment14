@@ -2,16 +2,9 @@ import React from "react";
 import styled from "styled-components";
 
 // Import all the components we'll use for the portfolio
-import { HeroImage } from "./components/HeroImage/HeroImage";
 import { Card } from "./components/Card/Card";
 import { Button } from "./components/Button/Button";
 import { Text } from "./components/Text/Text";
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableCell,
-} from "./components/Table/Table";
 
 // Portfolio Layout Container
 const PortfolioContainer = styled.div`
@@ -225,13 +218,6 @@ const TagText = styled(Text)`
   margin: 0.25rem;
 `;
 
-const SkillBadge = styled(Text)`
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-`;
-
 const SpacedText = styled(Text)`
   margin-bottom: 1rem;
 `;
@@ -247,14 +233,6 @@ const DescriptionText = styled(Text)`
 const CenteredText = styled(Text)`
   margin-bottom: 2rem;
   text-align: center;
-`;
-
-const SectionHeaderText = styled(Text)`
-  margin-bottom: 1.5rem;
-`;
-
-const ToolsSectionText = styled(Text)`
-  margin: 2rem 0 1.5rem 0;
 `;
 
 const PortfolioApp: React.FC = () => {
